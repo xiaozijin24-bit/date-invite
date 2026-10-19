@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>想约你去约会 🌸</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+  html, body {
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+    background: #ffeaf4;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 20% 10%, #ffd6e8 0%, transparent 50%),
+      radial-gradient(circle at 80% 30%, #ffe5f0 0%, transparent 50%),
+      radial-gradient(circle at 50% 90%, #ffc8e0 0%, transparent 55%),
+      linear-gradient(180deg, #fff0f7 0%, #ffe3ee 100%);
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 60px;
+  }
+
+  /* 飘浮的爱心背景 */
+  .floats {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+  }
+  .float-heart {
+    position: absolute;
+    font-size: 22px;
+    opacity: 0.6;
+    animation: floatUp 8s linear infinite;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.5; }
+    100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* 顶部封面 */
+  .cover {
+    position: relative;
+    z-index: 2;
+    padding: 56px 24px 0;
+    text-align: center;
+  }
+  .kawaii {
+    font-size: 88px;
+    line-height: 1;
+    display: inline-block;
+    animation: wobble 2.6s ease-in-out infinite;
+    filter: drop-shadow(0 6px 12px rgba(255, 105, 180, 0.3));
+  }
+  @keyframes wobble {
+    0%, 100% { transform: rotate(-6deg) translateY(0); }
+    25% { transform: rotate(4deg) translateY(-6px); }
+    50% { transform: rotate(-3deg) translateY(0); }
+    75% { transform: rotate(6deg) translateY(-4px); }
+  }
+
+  .title {
+    font-size: 30px;
+    font-weight: 700;
+    color: #d6336c;
+    margin-top: 18px;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 0 #fff, 0 4px 10px rgba(214, 51, 108, 0.18);
+  }
+  .title .hl {
+    background: linear-gradient(135deg, #ff5fa2, #ff8fb8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .sub {
+    font-size: 14px;
+    color: #b04569;
+    margin-top: 10px;
+    letter-spacing: 1px;
+    opacity: 0.85;
+  }
+
+  /* 邀请卡 */
+  .invite-card {
+    position: relative;
+    z-index: 2;
+    margin: 28px 18px 0;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(8px);
+    border-radius: 24px;
+    padding: 26px 22px 28px;
+    box-shadow: 0 12px 36px rgba(214, 51, 108, 0.15);
+    border: 2px solid #fff;
+  }
+  .invite-card::before, .invite-card::after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffe3ee;
+    top: -9px;
+  }
+  .invite-card::before { left: 22px; box-shadow: inset 0 0 0 2px #fff; }
+  .invite-card::after { right: 22px; box-shadow: inset 0 0 0 2px #fff; }
+
+  .invite-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1.5px dashed #ffd0e0;
+  }
+  .invite-row:last-child { border-bottom: none; }
+  .invite-emoji {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ffd6e8, #ffc0d8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(255, 105, 180, 0.2);
+  }
+  .invite-label {
+    font-size: 11px;
+    color: #b04569;
+    margin-bottom: 2px;
+    letter-spacing: 1px;
+  }
+  .invite-value {
+    font-size: 15px;
+    color: #5a2a44;
+    font-weight: 600;
+  }
+
+  .invite-msg {
+    background: linear-gradient(135deg, #fff5fa, #ffe9f2);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin: 16px 0 6px;
+    border-left: 4px solid #ff5fa2;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #7a3a5c;
+  }
+  .invite-msg .heart { color: #ff3a85; }
+
+  /* 按钮区 */
+  .btn-area {
+    position: relative;
+    z-index: 3;
+    margin: 32px 24px 0;
+    min-height: 80px;
+  }
+  .btn-accept {
+    width: 100%;
+    height: 64px;
+    border: none;
+    border-radius: 40px;
+    background: linear-gradient(135deg, #ff5fa2 0%, #ff8fb8 50%, #ffb3d1 100%);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(255, 95, 162, 0.45), 0 0 0 0 rgba(255, 95, 162, 0.4);
+    animation: pulse 2s ease-in-out infinite;
+    transition: transform 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 8px 20px rgba(255, 95, 162, 0.45), 0 0 0 0 rgba(255, 95, 162, 0.5); }
+    50% { box-shadow: 0 8px 20px rgba(255, 95, 162, 0.45), 0 0 0 16px rgba(255, 95, 162, 0); }
+  }
+  .btn-accept:active { transform: scale(0.96); }
+  .btn-accept::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 50%;
+    height: 200%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent);
+    transform: rotate(20deg);
+    animation: shine 3s infinite;
+  }
+  @keyframes shine {
+    0% { left: -60%; }
+    50% { left: 130%; }
+    100% { left: 130%; }
+  }
+
+  .btn-reject-wrap {
+    position: relative;
+    height: 48px;
+    margin-top: 16px;
+  }
+  .btn-reject {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    height: 44px;
+    padding: 0 22px;
+    border: 2px solid #ffc8db;
+    border-radius: 30px;
+    background: #fff;
+    color: #b04569;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: left 0.3s cubic-bezier(0.22, 1.4, 0.5, 1), top 0.3s cubic-bezier(0.22, 1.4, 0.5, 1), opacity 0.3s, transform 0.15s;
+    box-shadow: 0 4px 12px rgba(214, 51, 108, 0.12);
+  }
+  .btn-reject:active { transform: translateX(-50%) scale(0.94); }
+
+  /* 调皮提示泡泡 */
+  .tease-bubble {
+    position: absolute;
+    z-index: 10;
+    background: #fff;
+    color: #d6336c;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 16px;
+    border: 2px solid #ffc8db;
+    box-shadow: 0 4px 12px rgba(214, 51, 108, 0.2);
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: all 0.25s cubic-bezier(0.22, 1.4, 0.5, 1);
+    white-space: nowrap;
+  }
+  .tease-bubble.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .tease-bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #fff;
+    filter: drop-shadow(0 2px 0 #ffc8db);
+  }
+
+  .hint {
+    text-align: center;
+    font-size: 12px;
+    color: #b04569;
+    opacity: 0.7;
+    margin-top: 14px;
+    letter-spacing: 1px;
+  }
+
+  /* 成功页面（覆盖层） */
+  .success-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: linear-gradient(180deg, #fff0f7 0%, #ffd0e6 100%);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    text-align: center;
+    overflow-y: auto;
+    animation: fadeIn 0.4s ease;
+  }
+  .success-overlay.show { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .success-emoji {
+    font-size: 96px;
+    animation: pop 0.7s cubic-bezier(0.22, 1.4, 0.5, 1) backwards, bounce 2s ease-in-out infinite 0.7s;
+  }
+  @keyframes pop {
+    0% { transform: scale(0) rotate(-30deg); }
+    60% { transform: scale(1.3) rotate(10deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  .success-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #d6336c;
+    margin-top: 20px;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 0 #fff;
+  }
+  .success-sub {
+    font-size: 14px;
+    color: #b04569;
+    margin-top: 8px;
+    line-height: 1.7;
+    opacity: 0.9;
+  }
+
+  .success-card {
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 20px;
+    padding: 22px 24px;
+    margin-top: 28px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 8px 28px rgba(214, 51, 108, 0.2);
+    border: 2px solid #fff;
+  }
+  .success-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    text-align: left;
+    border-bottom: 1.5px dashed #ffd0e0;
+  }
+  .success-row:last-child { border-bottom: none; }
+  .success-emoji-sm {
+    font-size: 22px;
+    width: 36px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .success-text {
+    flex: 1;
+    font-size: 14px;
+    color: #5a2a44;
+    font-weight: 500;
+  }
+
+  .countdown {
+    background: linear-gradient(135deg, #ff5fa2, #ff8fb8);
+    color: #fff;
+    border-radius: 16px;
+    padding: 14px;
+    margin-top: 22px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 6px 18px rgba(255, 95, 162, 0.35);
+  }
+  .countdown-label {
+    font-size: 12px;
+    opacity: 0.9;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+  .countdown-time {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+
+  .success-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 26px;
+    width: 100%;
+    max-width: 360px;
+  }
+  .btn-ghost {
+    flex: 1;
+    height: 50px;
+    border: 2px solid #ff5fa2;
+    background: #fff;
+    color: #d6336c;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-pink {
+    flex: 1.5;
+    height: 50px;
+    border: none;
+    background: linear-gradient(135deg, #ff5fa2, #ff8fb8);
+    color: #fff;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(255, 95, 162, 0.4);
+  }
+  .btn-pink:active, .btn-ghost:active { transform: scale(0.97); }
+
+  /* 底部签名 */
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: #b04569;
+    opacity: 0.5;
+    margin-top: 28px;
+    position: relative;
+    z-index: 2;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- 飘浮爱心背景 -->
+  <div class="floats" id="floats"></div>
+
+  <!-- 顶部封面 -->
+  <div class="cover">
+    <div class="kawaii">🥺</div>
+    <div class="title">想约<span class="hl">去约会</span>嘛？</div>
+    <div class="sub">本邀请由一颗喜欢你的心发出 ❤</div>
+  </div>
+
+  <!-- 邀请卡 -->
+  <div class="invite-card">
+    <div class="invite-row">
+      <div class="invite-emoji">📅</div>
+      <div>
+        <div class="invite-label">约会日期</div>
+        <div class="invite-value">本周六 · 10:30 AM</div>
+      </div>
+    </div>
+    <div class="invite-row">
+      <div class="invite-emoji">📍</div>
+      <div>
+        <div class="invite-label">约会地点</div>
+        <div class="invite-value">城南咖啡角（你常去那家）</div>
+      </div>
+    </div>
+    <div class="invite-row">
+      <div class="invite-emoji">🍿</div>
+      <div>
+        <div class="invite-label">约会内容</div>
+        <div class="invite-value">看电影 + 逛夜市 + 牵手散步</div>
+      </div>
+    </div>
+    <div class="invite-row">
+      <div class="invite-emoji">🎁</div>
+      <div>
+        <div class="invite-label">附赠</div>
+        <div class="invite-value">一杯你爱的杨枝甘露 + 我</div>
+      </div>
+    </div>
+
+    <div class="invite-msg">
+      <span class="heart">♥</span> 想了好久才敢发出这条邀请，答应我好不好？<br>
+      <span class="heart">♥</span> 不会让你失望的，会准备小惊喜，会让你笑，会一路送你回家。<br>
+      <span class="heart">♥</span> 重点：拒绝按钮今天请假了，点不动哦~
+    </div>
+  </div>
+
+  <!-- 按钮区 -->
+  <div class="btn-area">
+    <button class="btn-accept" onclick="acceptInvitation()">好呀 好呀 ❤</button>
+
+    <div class="btn-reject-wrap">
+      <button class="btn-reject" id="rejectBtn" onclick="dodgeReject(event)">再想想…</button>
+      <div class="tease-bubble" id="teaseBubble"></div>
+    </div>
+
+    <div class="hint">温馨提示：拒绝按钮已逃跑，请直接点粉色按钮 ☝</div>
+  </div>
+
+  <div class="footer">— 来自一颗小心心 ·@你的ta</div>
+
+</div>
+
+<!-- 成功覆盖层 -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-emoji">🎉</div>
+  <div class="success-title">答应啦！好开心~</div>
+  <div class="success-sub">
+    啦啦啦~ 期待了好久 ❤<br>
+    周六见，我会准时到，会带小礼物，记得想我。
+  </div>
+
+  <div class="success-card">
+    <div class="success-row">
+      <div class="success-emoji-sm">📅</div>
+      <div class="success-text">本周六 · 10:30 AM</div>
+    </div>
+    <div class="success-row">
+      <div class="success-emoji-sm">📍</div>
+      <div class="success-text">城南咖啡角</div>
+    </div>
+    <div class="success-row">
+      <div class="success-emoji-sm">🍿</div>
+      <div class="success-text">看电影 + 逛夜市 + 散步</div>
+    </div>
+    <div class="success-row">
+      <div class="success-emoji-sm">☕</div>
+      <div class="success-text">杨枝甘露已下单，到店自取</div>
+    </div>
+  </div>
+
+  <div class="countdown">
+    <div class="countdown-label">距约会还有</div>
+    <div class="countdown-time" id="countdown">— 天 — 时 — 分 — 秒</div>
+  </div>
+
+  <div class="success-actions">
+    <button class="btn-ghost" onclick="addCalendar()">📅 加日历</button>
+    <button class="btn-pink" onclick="shareBack()">给 ta 回个话 ❤</button>
+  </div>
+</div>
+
+<script>
+  // ===== 飘浮爱心 =====
+  const floats = document.getElementById('floats');
+  const heartChars = ['💗','💖','💕','💝','🌸','✨','🎀','🍓'];
+  function spawnHeart() {
+    const h = document.createElement('div');
+    h.className = 'float-heart';
+    h.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
+    h.style.left = Math.random() * 100 + '%';
+    h.style.bottom = '-30px';
+    h.style.fontSize = (16 + Math.random() * 18) + 'px';
+    h.style.animationDuration = (6 + Math.random() * 5) + 's';
+    h.style.opacity = (0.35 + Math.random() * 0.35).toFixed(2);
+    floats.appendChild(h);
+    setTimeout(() => h.remove(), 11000);
+  }
+  for (let i = 0; i < 8; i++) setTimeout(spawnHeart, i * 600);
+  setInterval(spawnHeart, 900);
+
+  // ===== 拒绝按钮逃跑 =====
+  const rejectBtn = document.getElementById('rejectBtn');
+  const teaseBubble = document.getElementById('teaseBubble');
+  const teaseMessages = [
+    '不行哦~',
+    '再想想嘛 🥺',
+    '拒绝按钮罢工了',
+    '人家会难过的',
+    '不可以拒绝！',
+    '真的不考虑一下？',
+    '本按钮今天请假',
+    '点不到点不到~',
+    '答应啦好不好',
+    '心都要碎啦 💔',
+  ];
+
+  let dodgeCount = 0;
+  let lastX = 0, lastY = 0;
+
+  function dodgeReject(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // 计算随机新位置（在按钮容器内偏移）
+    const wrap = rejectBtn.parentElement;
+    const wrapRect = wrap.getBoundingClientRect();
+    const btnW = rejectBtn.offsetWidth;
+    const btnH = rejectBtn.offsetHeight;
+
+    // 在可视范围内随机位置（限制在屏幕内）
+    const maxX = window.innerWidth - btnW - 32;
+    const minX = 32;
+    const maxY = window.innerHeight - btnH - 120;
+    const minY = 120;
+
+    let newX, newY, tries = 0;
+    do {
+      newX = minX + Math.random() * (maxX - minX);
+      newY = minY + Math.random() * (maxY - minY);
+      tries++;
+    } while (tries < 5 && Math.abs(newX - lastX) < 80 && Math.abs(newY - lastY) < 80);
+    lastX = newX; lastY = newY;
+
+    // 转成 fixed 定位，跳出容器约束
+    rejectBtn.style.position = 'fixed';
+    rejectBtn.style.left = newX + 'px';
+    rejectBtn.style.top = newY + 'px';
+    rejectBtn.style.transform = 'none';
+    rejectBtn.style.transition = 'left 0.35s cubic-bezier(0.22, 1.4, 0.5, 1), top 0.35s cubic-bezier(0.22, 1.4, 0.5, 1), opacity 0.3s, transform 0.15s';
+
+    // 弹出调皮话
+    const msg = teaseMessages[dodgeCount % teaseMessages.length];
+    showTease(msg, newX + btnW / 2, newY - 14);
+
+    dodgeCount++;
+
+    // 第 6 次后按钮变小变淡
+    if (dodgeCount >= 6) {
+      rejectBtn.style.transform = 'scale(0.6)';
+      rejectBtn.style.opacity = '0.4';
+    }
+    // 第 9 次后按钮消失
+    if (dodgeCount >= 9) {
+      rejectBtn.style.opacity = '0';
+      rejectBtn.style.pointerEvents = 'none';
+      showTease('拒绝按钮已下线~', window.innerWidth / 2, window.innerHeight / 2);
+    }
+  }
+
+  // 鼠标悬停也逃跑（PC 端）
+  rejectBtn.addEventListener('mouseenter', function(e) {
+    if (dodgeCount < 9 && Math.random() > 0.4) dodgeReject(e);
+  });
+
+  function showTease(msg, x, y) {
+    teaseBubble.textContent = msg;
+    teaseBubble.style.left = (x - teaseBubble.offsetWidth / 2) + 'px';
+    teaseBubble.style.top = y + 'px';
+    teaseBubble.style.position = 'fixed';
+    teaseBubble.classList.add('show');
+    clearTimeout(window._teaseTimer);
+    window._teaseTimer = setTimeout(() => {
+      teaseBubble.classList.remove('show');
+    }, 1400);
+  }
+
+  // ===== 接受邀请 =====
+  function acceptInvitation() {
+    // 撒花/爱心爆炸效果
+    burstHearts();
+    setTimeout(() => {
+      document.getElementById('successOverlay').classList.add('show');
+      startCountdown();
+    }, 350);
+  }
+
+  function burstHearts() {
+    for (let i = 0; i < 24; i++) {
+      const h = document.createElement('div');
+      h.className = 'float-heart';
+      h.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
+      h.style.position = 'fixed';
+      h.style.left = '50%';
+      h.style.top = '60%';
+      h.style.fontSize = (20 + Math.random() * 24) + 'px';
+      h.style.zIndex = 99;
+      h.style.animation = 'none';
+      h.style.transition = 'all 1.2s cubic-bezier(0.22, 1.4, 0.5, 1)';
+      h.style.opacity = '1';
+      document.body.appendChild(h);
+
+      requestAnimationFrame(() => {
+        const angle = (Math.PI * 2 * i) / 24 + Math.random() * 0.5;
+        const dist = 120 + Math.random() * 220;
+        h.style.left = (window.innerWidth / 2 + Math.cos(angle) * dist) + 'px';
+        h.style.top = (window.innerHeight * 0.6 + Math.sin(angle) * dist) + 'px';
+        h.style.opacity = '0';
+        h.style.transform = `rotate(${Math.random() * 720}deg) scale(0.3)`;
+      });
+      setTimeout(() => h.remove(), 1300);
+    }
+  }
+
+  // ===== 倒计时（本周六 10:30） =====
+  function startCountdown() {
+    const target = getNextSaturday();
+    target.setHours(10, 30, 0, 0);
+
+    function update() {
+      const now = new Date();
+      let diff = target - now;
+      if (diff < 0) diff = 0;
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor(diff / 3600000) % 24;
+      const m = Math.floor(diff / 60000) % 60;
+      const s = Math.floor(diff / 1000) % 60;
+      const el = document.getElementById('countdown');
+      if (el) el.textContent = `${d} 天 ${pad(h)} 时 ${pad(m)} 分 ${pad(s)} 秒`;
+    }
+    update();
+    clearInterval(window._cd);
+    window._cd = setInterval(update, 1000);
+  }
+
+  function getNextSaturday() {
+    const now = new Date();
+    const day = now.getDay();
+    const daysToSat = (6 - day + 7) % 7 || 7;
+    const next = new Date(now);
+    next.setDate(now.getDate() + daysToSat);
+    return next;
+  }
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function addCalendar() {
+    alert('📅 已添加到日历提醒：本周六 10:30\n城南咖啡角 · 不见不散 ❤');
+  }
+
+  function shareBack() {
+    const text = '好呀~ 周六见！我也等不及啦 ❤';
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('已复制回复：\n' + text + '\n\n快去粘贴发给 ta 吧~');
+      }).catch(() => alert(text));
+    } else {
+      alert(text);
+    }
+  }
+</script>
+</body>
+</html>
